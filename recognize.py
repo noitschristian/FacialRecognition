@@ -1,3 +1,19 @@
+#------------------------------------------------------------------#
+#   Christian Pennington - R11445847
+#   recognize.py for faceRecognition project
+#   Description: From any video stream source, program will
+#       detect faces in frame and compare these faces to the
+#       model and determine the closest probable face and
+#		display this information on screen.
+#
+#   Date: 10/6/2020
+#   Command Line arguments:
+#   -d, --detector, =output/embeddings.pickle
+#   -m, --embedding-model, =openface_nn4.small2.v1.t7
+#	-r, --recognizer, =output/recognizer.pickle
+#   -l, --le, =output/le.pickle
+#-----------------------------------------------------------------#
+
 # import the necessary packages
 from imutils.video import VideoStream
 from imutils.video import FPS
@@ -79,9 +95,10 @@ while True:
 			# compute the (x, y)-coordinates of the bounding box
 			box = detections[0, 0, i, 3:7] * np.array([w, h, w, h])
 			(startX, startY, endX, endY) = box.astype("int")
+			newend = endX+100
 
 			# extract the face ROI
-			face = frame[startY:endY, startX:endX]
+			face = frame[startY:endY, startX:newend]
 			(fH, fW) = face.shape[:2]
 
 			# ensure the face width and height are sufficiently large
@@ -104,7 +121,7 @@ while True:
 			# associated probability
 			text = "{}: {:.2f}%".format(name, proba * 100)
 			y = startY - 10 if startY - 10 > 10 else startY + 10
-			cv2.rectangle(frame, (startX, startY), (endX, endY),
+			cv2.rectangle(frame, (startX, startY), (newend, endY),
 				(0, 0, 255), 2)
 			cv2.putText(frame, text, (startX, y),
 				cv2.FONT_HERSHEY_SIMPLEX, 0.45, (0, 0, 255), 2)
